@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="description" content="SurveyKE — Complete surveys about Kenyan brands and earn KES directly to your wallet. Sponsored by Lucy Corporation.">
+    <meta name="theme-color" content="#2563eb">
+    <title>SurveyKE · Earn via surveys</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        html { -webkit-text-size-adjust: 100%; }
+        body {
+            background: #f5f7fb; min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 1rem; color: #1e293b;
+            transition: opacity 0.15s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+        body.loading { opacity: 0; }
+
+        .app-container {
+            width: 100%; max-width: 1200px;
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            overflow: hidden; min-height: 700px;
+            display: flex; flex-direction: column;
+        }
+
+        /* Header */
+        .app-header {
+            padding: 1.5rem 2rem;
+            background: white;
+            border-bottom: 1px solid #eef2f6;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 1rem;
+        }
+        .logo { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 1.6rem; color: #0f172a; letter-spacing: -0.5px; }
+        .logo i { color: #2563eb; background: #e0e7ff; padding: 0.5rem; border-radius: 1rem; font-size: 1.4rem; }
+        .logo span { color: #2563eb; }
+        .user-badge {
+            display: flex; align-items: center; gap: 1rem;
+            background: #f8fafc; padding: 0.4rem 1rem 0.4rem 0.8rem;
+            border-radius: 3rem; border: 1px solid #e2e8f0;
+        }
+        .user-badge i { color: #2563eb; font-size: 1.2rem; }
+        .user-badge .username { font-weight: 600; font-size: 0.95rem; }
+        .logout-btn {
+            background: none; border: none; color: #64748b; cursor: pointer;
+            font-size: 1rem; padding: 0.3rem; border-radius: 50%;
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            width: 2rem; height: 2rem;
+        }
+        .logout-btn:hover { color: #ef4444; background: #fee2e2; }
+
+        .main-content {
+            flex: 1; padding: 2rem;
+            display: flex; flex-direction: column; gap: 2rem;
+            background: #f9fbfe;
+        }
+
+        /* Auth */
+        .auth-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            max-width: 400px; margin: 0 auto; width: 100%; padding: 2rem 1rem;
+        }
+        .auth-tabs {
+            display: flex; gap: 0.5rem; background: #eef2f6;
+            padding: 0.4rem; border-radius: 2rem;
+            margin-bottom: 2rem; width: 100%;
+        }
+        .auth-tab {
+            flex: 1; padding: 0.8rem; border: none; background: transparent;
+            border-radius: 2rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; color: #64748b; font-size: 0.95rem;
+        }
+        .auth-tab.active { background: white; color: #2563eb; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02); }
+        .auth-form { display: flex; flex-direction: column; gap: 1.2rem; width: 100%; }
+        .input-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .input-group label { font-size: 0.85rem; font-weight: 600; color: #334155; }
+        .input-group input {
+            padding: 0.9rem 1.2rem; border: 1.5px solid #e2e8f0;
+            border-radius: 1rem; font-size: 1rem; transition: all 0.2s;
+            background: white; -webkit-appearance: none; appearance: none;
+        }
+        .input-group input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+
+        .btn-primary {
+            background: #2563eb; color: white; border: none;
+            padding: 1rem; border-radius: 1rem; font-weight: 600;
+            font-size: 1rem; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            gap: 0.6rem; margin-top: 0.5rem; width: 100%;
+        }
+        .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        .auth-footer { margin-top: 1.5rem; font-size: 0.9rem; color: #64748b; text-align: center; }
+        .auth-footer a { color: #2563eb; font-weight: 600; text-decoration: none; cursor: pointer; }
+
+        .forgot-row {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: -0.5rem;
+        }
+        .forgot-btn {
+            background: none; border: none; color: #94a3b8;
+            font-size: 0.8rem; font-weight: 500;
+            cursor: not-allowed; padding: 0.3rem 0;
+            text-decoration: underline dotted;
+        }
+        .forgot-hint { font-size: 0.75rem; color: #94a3b8; margin-top: 0.3rem; }
+
+        .sponsor-line {
+            margin-top: 2rem; font-size: 0.8rem; color: #94a3b8;
+            text-align: center;
+        }
+        .sponsor-line a { color: #2563eb; text-decoration: none; font-weight: 600; }
+        .sponsor-line a:hover { text-decoration: underline; }
+
+        .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 0.3rem; display: none; }
+
+        /* Dashboard */
+        .dashboard { display: flex; flex-direction: column; gap: 2rem; width: 100%; }
+
+        .resume-banner {
+            background: #eff6ff; border: 1.5px solid #93c5fd;
+            border-radius: 1.2rem; padding: 1rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 1rem;
+        }
+        .resume-banner-text { display: flex; align-items: center; gap: 0.7rem; }
+        .resume-banner-text i { color: #2563eb; font-size: 1.3rem; }
+        .resume-banner-text p { font-size: 0.9rem; color: #1e40af; font-weight: 500; }
+        .resume-btn {
+            background: #2563eb; color: white; border: none;
+            padding: 0.6rem 1.2rem; border-radius: 2rem;
+            font-weight: 600; font-size: 0.85rem; cursor: pointer;
+        }
+        .resume-btn:hover { background: #1d4ed8; }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            border-radius: 1.5rem; padding: 1.8rem 2rem; color: white;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 1.5rem;
+        }
+        .welcome-text h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem; }
+        .welcome-text p { opacity: 0.9; font-size: 0.95rem; }
+        .wallet-summary {
+            display: flex; gap: 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            padding: 1rem 1.8rem; border-radius: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .wallet-item { display: flex; flex-direction: column; gap: 0.2rem; }
+        .wallet-item .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; font-weight: 500; }
+        .wallet-item .value { font-size: 1.4rem; font-weight: 700; }
+
+        /* Section title */
+        .section-title {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;
+        }
+        .section-title h3 { font-size: 1.2rem; font-weight: 700; color: #0f172a; }
+        .section-title span { font-size: 0.9rem; color: #64748b; }
+
+        /* Survey grid */
+        .survey-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.2rem;
+        }
+        .survey-card {
+            background: white; border-radius: 1.2rem; padding: 1.4rem;
+            border: 1px solid #eef2f6; transition: all 0.25s ease;
+            display: flex; flex-direction: column; gap: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        }
+        .survey-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.08);
+            border-color: #dbeafe;
+        }
+        .survey-header { display: flex; align-items: flex-start; justify-content: space-between; }
+        .survey-icon {
+            background: #e0e7ff; color: #2563eb;
+            padding: 0.6rem; border-radius: 1rem; font-size: 1.2rem;
+            width: 2.5rem; height: 2.5rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .reward-tag {
+            background: #dcfce7; color: #166534;
+            padding: 0.3rem 0.8rem; border-radius: 2rem;
+            font-weight: 700; font-size: 0.85rem;
+        }
+        .survey-card h4 { font-size: 1.05rem; font-weight: 700; color: #0f172a; }
+        .survey-meta { display: flex; gap: 1rem; font-size: 0.8rem; color: #64748b; flex-wrap: wrap; }
+        .survey-meta i { margin-right: 0.3rem; color: #94a3b8; }
+        .btn-survey {
+            background: #f1f5f9; border: none; padding: 0.7rem;
+            border-radius: 0.9rem; font-weight: 600; color: #2563eb;
+            cursor: pointer; transition: all 0.2s; margin-top: 0.2rem;
+            display: flex; align-items: center; justify-content: center;
+            gap: 0.5rem; width: 100%; font-size: 0.9rem;
+        }
+        .btn-survey:hover { background: #2563eb; color: white; }
+        .btn-survey:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+
+        /* Referral card */
+        .referral-card {
+            background: white; border: 1px solid #eef2f6;
+            border-radius: 1.5rem; padding: 1.8rem;
+        }
+        .referral-card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;
+        }
+        .referral-card-header h3 { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+        .referral-card-header h3 i { color: #f59e0b; }
+        .referral-badge {
+            background: #fef3c7; color: #92400e;
+            padding: 0.3rem 0.9rem; border-radius: 2rem;
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .referral-badge.complete { background: #dcfce7; color: #166534; }
+
+        .referral-desc { font-size: 0.9rem; color: #64748b; margin-bottom: 1.2rem; line-height: 1.5; }
+
+        .progress-bar-container {
+            background: #f1f5f9; border-radius: 2rem;
+            height: 1.2rem; overflow: hidden; margin-bottom: 0.5rem;
+            position: relative;
+        }
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+            height: 100%; width: 0%;
+            border-radius: 2rem; transition: width 0.5s ease;
+        }
+        .progress-bar-fill.complete { background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%); }
+
+        .progress-labels {
+            display: flex; justify-content: space-between;
+            font-size: 0.8rem; color: #64748b; margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
+        .progress-labels .complete-text { color: #166534; }
+
+        .referral-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+        .whatsapp-btn {
+            background: #25d366; color: white; border: none;
+            padding: 0.9rem 1.5rem; border-radius: 1rem;
+            font-weight: 600; font-size: 0.95rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            gap: 0.6rem; transition: all 0.2s; flex: 1; min-width: 200px;
+        }
+        .whatsapp-btn:hover { background: #1eb057; transform: translateY(-1px); }
+        .whatsapp-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
+
+        .referral-code-box {
+            background: #f8fafc; border: 1.5px dashed #cbd5e1;
+            border-radius: 1rem; padding: 0.8rem 1.2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 1rem; margin-top: 1rem; flex-wrap: wrap;
+        }
+        .referral-code-box .code-label { font-size: 0.8rem; color: #64748b; font-weight: 500; }
+        .referral-code-box .code-value {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem; font-weight: 700; color: #0f172a;
+            letter-spacing: 1px;
+        }
+        .copy-code-btn {
+            background: #e0e7ff; color: #2563eb; border: none;
+            padding: 0.5rem 1rem; border-radius: 0.7rem;
+            font-weight: 600; font-size: 0.8rem; cursor: pointer;
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        .copy-code-btn:hover { background: #c7d2fe; }
+
+        /* Verification / Activation card */
+        .verification-card {
+            background: white; border: 1.5px solid #fbbf24;
+            border-radius: 1.5rem; padding: 1.8rem;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.08);
+        }
+        .verification-card.done {
+            border-color: #86efac;
+            background: #f0fdf4;
+        }
+        .verification-card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;
+        }
+        .verification-card-header h3 {
+            font-size: 1.15rem; font-weight: 700;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .verification-card-header h3 i { color: #f59e0b; }
+        .verification-card.done .verification-card-header h3 i { color: #22c55e; }
+        .verification-status {
+            background: #fef3c7; color: #92400e;
+            padding: 0.3rem 0.9rem; border-radius: 2rem;
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .verification-status.done { background: #dcfce7; color: #166534; }
+
+        .verification-desc { font-size: 0.9rem; color: #64748b; margin-bottom: 1.2rem; line-height: 1.5; }
+
+        .mpesa-number-row {
+            display: flex; align-items: center; gap: 0.6rem;
+            background: #fef3c7; border: 2px solid #fbbf24;
+            padding: 0.8rem 1rem; border-radius: 1rem;
+            margin: 0.8rem 0; flex-wrap: wrap;
+        }
+        .verification-card.done .mpesa-number-row { display: none; }
+        .mpesa-number {
+            font-family: 'Courier New', monospace;
+            font-size: 1.3rem; font-weight: 800; color: #92400e;
+            letter-spacing: 1px; flex: 1; min-width: 150px;
+        }
+        .copy-btn {
+            background: #f59e0b; color: white; border: none;
+            padding: 0.6rem 1rem; border-radius: 0.7rem;
+            font-weight: 700; font-size: 0.85rem; cursor: pointer;
+            display: flex; align-items: center; gap: 0.4rem;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .copy-btn:hover { background: #d97706; }
+        .copy-btn.copied { background: #16a34a; }
+
+        .mpesa-textarea {
+            width: 100%; min-height: 90px; padding: 0.9rem 1rem;
+            border: 1.5px solid #f97316; border-radius: 1rem;
+            font-size: 0.85rem; font-family: 'Courier New', monospace;
+            resize: vertical; transition: all 0.2s; background: white;
+            margin-top: 0.6rem;
+        }
+        .verification-card.done .mpesa-textarea,
+        .verification-card.done .verify-btn { display: none; }
+        .mpesa-textarea:focus { outline: none; border-color: #ea580c; box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15); }
+        .mpesa-textarea::placeholder { font-family: 'Inter', sans-serif; color: #94a3b8; }
+
+        .verify-btn {
+            background: #f97316; color: white; border: none;
+            padding: 0.8rem 1.5rem; border-radius: 1rem;
+            font-weight: 700; font-size: 0.95rem; cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            gap: 0.5rem; width: 100%; margin-top: 0.8rem;
+        }
+        .verify-btn:hover { background: #ea580c; }
+        .verify-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .activation-status {
+            margin-top: 0.8rem; font-size: 0.85rem; font-weight: 600;
+            display: flex; align-items: flex-start; gap: 0.5rem; line-height: 1.4;
+        }
+        .activation-status.success { color: #166534; }
+        .activation-status.error { color: #dc2626; }
+        .activation-status i { margin-top: 0.15rem; flex-shrink: 0; }
+
+        /* Help & Support card */
+        .help-card {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1.5px solid #bfdbfe;
+            border-radius: 1.5rem;
+            padding: 1.3rem 1.5rem;
+        }
+        .help-card-content {
+            display: flex; align-items: center; gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .help-card-icon {
+            width: 3rem; height: 3rem; flex-shrink: 0;
+            background: #2563eb; color: white;
+            border-radius: 1rem; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 1.3rem;
+        }
+        .help-card-text { flex: 1; min-width: 180px; }
+        .help-card-text h4 {
+            font-size: 1rem; font-weight: 700;
+            color: #0f172a; margin-bottom: 0.2rem;
+        }
+        .help-card-text p { font-size: 0.85rem; color: #475569; line-height: 1.4; }
+        .help-btn {
+            background: #2563eb; color: white; border: none;
+            padding: 0.75rem 1.2rem; border-radius: 1rem;
+            font-weight: 600; font-size: 0.9rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            gap: 0.5rem; transition: all 0.2s; white-space: nowrap;
+        }
+        .help-btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+
+        /* Withdraw CTA */
+        .withdraw-cta {
+            background: white; border-radius: 1.5rem; padding: 2rem;
+            text-align: center; border: 1px solid #eef2f6;
+        }
+        .withdraw-cta h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .withdraw-cta p { font-size: 0.9rem; color: #64748b; margin-bottom: 1.2rem; }
+        .withdraw-btn {
+            background: #16a34a; color: white; border: none;
+            padding: 1rem 2.5rem; border-radius: 1rem;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 0.6rem;
+        }
+        .withdraw-btn:hover { background: #15803d; transform: translateY(-1px); }
+        .withdraw-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
+        .withdraw-hint { font-size: 0.8rem; color: #94a3b8; margin-top: 0.8rem; }
+
+        /* Footer */
+        .site-footer {
+            padding: 1.5rem 2rem; text-align: center;
+            font-size: 0.8rem; color: #94a3b8;
+            border-top: 1px solid #eef2f6;
+            background: white; line-height: 1.6;
+        }
+        .site-footer a { color: #2563eb; text-decoration: none; font-weight: 600; }
+        .site-footer a:hover { text-decoration: underline; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            background: #0f172a; color: white;
+            padding: 0.8rem 1.8rem; border-radius: 3rem;
+            font-weight: 500; font-size: 0.9rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            z-index: 9999; transition: all 0.3s;
+            opacity: 0; pointer-events: none;
+            max-width: 90vw; text-align: center; line-height: 1.4;
+        }
+        .toast.show { opacity: 1; bottom: 2.5rem; }
+        .toast.success { background: #16a34a; }
+        .toast.error { background: #dc2626; }
+
+        /* Modal base */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            z-index: 1000; display: flex; align-items: center; justify-content: center;
+            padding: 1rem; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-overlay.top { z-index: 1100; }
+
+        .modal {
+            background: white; border-radius: 2rem;
+            max-width: 600px; width: 100%;
+            max-height: 90vh; overflow-y: auto;
+            padding: 2rem; position: relative;
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal::-webkit-scrollbar { width: 6px; }
+        .modal::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+        .modal-close {
+            position: absolute; top: 1.2rem; right: 1.2rem;
+            background: #f1f5f9; border: none;
+            width: 2.2rem; height: 2.2rem; border-radius: 50%;
+            font-size: 1.1rem; color: #64748b; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; z-index: 2;
+        }
+        .modal-close:hover { background: #e2e8f0; color: #0f172a; }
+
+        .modal h3 {
+            font-size: 1.4rem; font-weight: 700;
+            margin-bottom: 0.5rem; padding-right: 2rem;
+        }
+        .modal .modal-desc {
+            color: #64748b; font-size: 0.95rem;
+            margin-bottom: 1.5rem; padding-bottom: 1rem;
+            border-bottom: 1px solid #eef2f6; line-height: 1.5;
+        }
+
+        /* Survey questions */
+        .survey-question { margin-bottom: 1.5rem; }
+        .survey-question p {
+            font-weight: 600; font-size: 0.95rem;
+            margin-bottom: 0.7rem; color: #0f172a; line-height: 1.5;
+        }
+        .survey-question p .q-number { color: #2563eb; margin-right: 0.3rem; }
+        .survey-question p .q-points { color: #2563eb; font-size: 0.8rem; font-weight: 600; }
+        .question-options { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+        .option-label {
+            display: flex; align-items: center; gap: 0.5rem;
+            background: #f8fafc; padding: 0.6rem 1.2rem;
+            border-radius: 2rem; border: 1.5px solid #e2e8f0;
+            cursor: pointer; transition: all 0.2s; font-size: 0.9rem;
+            -webkit-user-select: none; user-select: none;
+        }
+        .option-label:hover { border-color: #93c5fd; background: #eff6ff; }
+        .option-label.selected { border-color: #2563eb; background: #eff6ff; }
+        .option-label input[type="radio"],
+        .option-label input[type="checkbox"] {
+            accent-color: #2563eb; width: 1rem; height: 1rem; flex-shrink: 0;
+        }
+        .text-answer {
+            width: 100%; padding: 0.8rem 1rem;
+            border: 1.5px solid #e2e8f0; border-radius: 1rem;
+            font-size: 0.95rem; transition: all 0.2s;
+        }
+        .text-answer:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+
+        .survey-submit-btn {
+            background: #2563eb; color: white; border: none;
+            padding: 1rem 2rem; border-radius: 1rem;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            gap: 0.6rem; width: 100%; margin-top: 1rem;
+        }
+        .survey-submit-btn:hover { background: #1d4ed8; }
+
+        /* Withdrawal center */
+        .wc-header {
+            background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+            margin: -2rem -2rem 1.5rem; padding: 1.5rem 2rem;
+            border-radius: 2rem 2rem 0 0; color: white;
+        }
+        .wc-header h3 { color: white; font-size: 1.3rem; margin-bottom: 0.3rem; }
+        .wc-header p { font-size: 0.9rem; opacity: 0.95; }
+        .wc-header .wc-balance {
+            font-size: 1.8rem; font-weight: 800; margin-top: 0.5rem;
+        }
+        .wc-header .wc-balance-label { font-size: 0.8rem; opacity: 0.9; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .withdrawal-form { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
+        .withdrawal-methods { display: flex; flex-wrap: wrap; gap: 0.8rem; margin: 0.5rem 0; }
+        .method-option {
+            display: flex; align-items: center; gap: 0.6rem;
+            background: #f8fafc; padding: 0.7rem 1.1rem;
+            border-radius: 1rem; border: 1.5px solid #e2e8f0;
+            cursor: pointer; transition: all 0.2s;
+            font-size: 0.9rem; font-weight: 500;
+        }
+        .method-option.selected { border-color: #2563eb; background: #eff6ff; }
+        .method-option input[type="radio"] { accent-color: #2563eb; width: 1.1rem; height: 1.1rem; }
+
+        .transfer-btn {
+            background: #16a34a; color: white; border: none;
+            padding: 1rem; border-radius: 1rem;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            gap: 0.6rem; width: 100%; margin-top: 0.5rem;
+        }
+        .transfer-btn:hover { background: #15803d; }
+        .transfer-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+        /* Success modal */
+        .success-content { text-align: center; padding: 1rem 0; }
+        .success-icon-big {
+            width: 5rem; height: 5rem; background: #dcfce7; color: #22c55e;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.5rem; font-size: 2.5rem;
+        }
+        .success-content h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.6rem; color: #0f172a; }
+        .success-content p { color: #64748b; font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.5; }
+        .success-amount {
+            background: #eff6ff; padding: 1rem 1.5rem;
+            border-radius: 1rem; display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+        .success-amount .amt { font-size: 2rem; font-weight: 800; color: #2563eb; }
+        .success-amount .cur { font-size: 0.9rem; color: #64748b; font-weight: 600; }
+
+        .btn-done {
+            background: #2563eb; color: white; border: none;
+            padding: 0.9rem 2.5rem; border-radius: 1rem;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            transition: all 0.2s; width: 100%;
+        }
+        .btn-done:hover { background: #1d4ed8; }
+
+        /* Confirm sent modal */
+        .confirm-sent-content { text-align: center; padding: 0.5rem 0; }
+        .confirm-sent-icon {
+            width: 4rem; height: 4rem; background: #dcfce7; color: #22c55e;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.2rem; font-size: 2rem;
+        }
+        .confirm-sent-content h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .confirm-sent-content p { color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.5; }
+        .confirm-sent-actions { display: flex; gap: 0.7rem; }
+        .confirm-sent-actions button {
+            flex: 1; padding: 0.9rem; border-radius: 1rem;
+            font-weight: 700; font-size: 0.95rem; cursor: pointer;
+            border: none; transition: all 0.2s;
+        }
+        .btn-yes { background: #16a34a; color: white; }
+        .btn-yes:hover { background: #15803d; }
+        .btn-no { background: #f1f5f9; color: #64748b; }
+        .btn-no:hover { background: #e2e8f0; }
+
+        /* Help & Support modal */
+        .support-email-row {
+            display: flex; align-items: center; gap: 0.5rem;
+            background: #f8fafc; border: 1.5px solid #e2e8f0;
+            border-radius: 1rem; padding: 0.7rem 0.9rem;
+            flex-wrap: wrap;
+        }
+        .support-email {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem; font-weight: 700;
+            color: #0f172a; flex: 1; min-width: 180px;
+            word-break: break-all;
+        }
+        .support-email-row .copy-btn {
+            background: #2563eb; color: white; border: none;
+            padding: 0.5rem 0.9rem; border-radius: 0.6rem;
+            font-weight: 600; font-size: 0.8rem; cursor: pointer;
+            display: flex; align-items: center; gap: 0.4rem;
+            transition: all 0.2s;
+        }
+        .support-email-row .copy-btn:hover { background: #1d4ed8; }
+        .support-email-row .copy-btn.copied { background: #16a34a; }
+
+        .support-response-note {
+            background: #fef9c3; color: #854d0e;
+            padding: 0.6rem 1rem; border-radius: 0.8rem;
+            font-size: 0.8rem; font-weight: 600;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+
+        .faq-item {
+            background: #f8fafc; border: 1px solid #e2e8f0;
+            border-radius: 0.8rem; margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+        .faq-item summary {
+            padding: 0.75rem 1rem; font-weight: 600;
+            font-size: 0.88rem; color: #0f172a;
+            cursor: pointer; user-select: none;
+            list-style: none;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary::after {
+            content: '+'; font-size: 1.2rem;
+            color: #2563eb; font-weight: 700;
+            transition: transform 0.2s;
+        }
+        .faq-item[open] summary::after { content: '−'; }
+        .faq-item p {
+            padding: 0 1rem 0.9rem; font-size: 0.82rem;
+            color: #475569; line-height: 1.5;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Responsive */
+        @media (max-width: 700px) {
+            body { padding: 0.5rem; }
+            .app-container { border-radius: 1.2rem; min-height: auto; }
+            .app-header { padding: 1rem 1.2rem; }
+            .main-content { padding: 1.2rem; gap: 1.5rem; }
+            .welcome-banner { flex-direction: column; align-items: flex-start; padding: 1.5rem; }
+            .wallet-summary { width: 100%; justify-content: space-between; }
+            .wallet-item .value { font-size: 1.2rem; }
+            .survey-grid { grid-template-columns: 1fr; }
+            .logo { font-size: 1.3rem; }
+            .logo i { font-size: 1.1rem; padding: 0.4rem; }
+            .modal { padding: 1.5rem; border-radius: 1.5rem; max-height: 95vh; }
+            .wc-header { margin: -1.5rem -1.5rem 1.5rem; padding: 1.3rem 1.5rem; border-radius: 1.5rem 1.5rem 0 0; }
+            .modal h3 { font-size: 1.2rem; }
+            .question-options { flex-direction: column; }
+            .option-label { width: 100%; }
+            .referral-actions { flex-direction: column; }
+            .whatsapp-btn { width: 100%; }
+            .referral-card { padding: 1.3rem; }
+            .verification-card { padding: 1.3rem; }
+            .withdraw-cta { padding: 1.5rem 1.2rem; }
+            .withdraw-btn { width: 100%; }
+            .mpesa-number { font-size: 1.1rem; }
+            .confirm-sent-actions { flex-direction: column; }
+            .site-footer { padding: 1rem 1.2rem; }
+            .help-card-content { flex-direction: column; align-items: flex-start; }
+            .help-btn { width: 100%; }
+        }
+        @media (max-width: 400px) {
+            .wallet-summary { flex-direction: column; gap: 0.6rem; }
+            .user-badge .username { display: none; }
+            .mpesa-number-row { flex-direction: column; align-items: stretch; }
+            .copy-btn { justify-content: center; }
+        }
+    </style>
+</head>
+<body class="loading">
+    <div class="app-container" id="app">
+        <header class="app-header">
+            <div class="logo">
+                <i class="fas fa-poll-h" aria-hidden="true"></i>
+                Survey<span>KE</span>
+            </div>
+            <div id="userHeader" class="hidden">
+                <div class="user-badge">
+                    <i class="fas fa-user-circle" aria-hidden="true"></i>
+                    <span class="username" id="headerUsername">User</span>
+                    <button class="logout-btn" id="logoutBtn" title="Logout" aria-label="Logout">
+                        <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content" id="mainContent">
+            <!-- AUTH -->
+            <div id="authScreen" class="auth-screen">
+                <div class="auth-tabs" role="tablist">
+                    <button class="auth-tab active" id="loginTab" role="tab">Login</button>
+                    <button class="auth-tab" id="registerTab" role="tab">Create account</button>
+                </div>
+
+                <form id="loginForm" class="auth-form" novalidate>
+                    <div class="input-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required>
+                    </div>
+                    <div class="forgot-row">
+                        <button type="button" class="forgot-btn" id="forgotBtn" disabled title="Password recovery unavailable">
+                            <i class="fas fa-question-circle" style="font-size: 0.75rem;"></i> Forgot password?
+                        </button>
+                    </div>
+                    <p class="forgot-hint">Password recovery is unavailable. Create a new account if you forget yours.</p>
+                    <div class="error-msg" id="loginError" role="alert"></div>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-arrow-right-to-bracket" aria-hidden="true"></i> Login
+                    </button>
+                </form>
+
+                <form id="registerForm" class="auth-form hidden" novalidate>
+                    <div class="input-group">
+                        <label for="regName">Full name</label>
+                        <input type="text" id="regName" placeholder="John Kamau" autocomplete="name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="regEmail">Email</label>
+                        <input type="email" id="regEmail" placeholder="you@example.com" autocomplete="email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="regPassword">Password (min 6 chars)</label>
+                        <input type="password" id="regPassword" placeholder="••••••••" autocomplete="new-password" minlength="6" required>
+                    </div>
+                    <div class="error-msg" id="regError" role="alert"></div>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-user-plus" aria-hidden="true"></i> Create account
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    <span id="switchAuthText">Don't have an account? <a id="switchAuthLink">Register</a></span>
+                </div>
+
+                <div class="sponsor-line">
+                    Sponsored by <a href="https://www.lucycorp.com/" target="_blank" rel="noopener">Lucy Corporation</a> · Building better communities
+                </div>
+            </div>
+
+            <!-- DASHBOARD -->
+            <div id="dashboardScreen" class="dashboard hidden">
+                <div class="resume-banner hidden" id="resumeBanner">
+                    <div class="resume-banner-text">
+                        <i class="fas fa-undo-alt" aria-hidden="true"></i>
+                        <p id="resumeBannerText">Welcome back! You were in the middle of something.</p>
+                    </div>
+                    <button class="resume-btn" id="resumeBtn">Resume →</button>
+                </div>
+
+                <div class="welcome-banner">
+                    <div class="welcome-text">
+                        <h2>Karibu, <span id="userNameDisplay">User</span>! 👋</h2>
+                        <p>Complete surveys and earn KES directly to your wallet.</p>
+                    </div>
+                    <div class="wallet-summary">
+                        <div class="wallet-item">
+                            <span class="label">Wallet balance</span>
+                            <span class="value" id="walletBalance">KES 0</span>
+                        </div>
+                        <div class="wallet-item">
+                            <span class="label">Withdrawable</span>
+                            <span class="value" id="withdrawableAmount">KES 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. SURVEYS (FIRST) -->
+                <div>
+                    <div class="section-title">
+                        <h3>Available surveys</h3>
+                        <span id="surveyCount">0 surveys</span>
+                    </div>
+                    <div class="survey-grid" id="surveyList"></div>
+                </div>
+
+                <!-- 2. REFERRALS (SECOND) -->
+                <div class="referral-card">
+                    <div class="referral-card-header">
+                        <h3><i class="fas fa-gift" aria-hidden="true"></i> Refer & Earn</h3>
+                        <span class="referral-badge" id="referralBadge">0/5 referrals</span>
+                    </div>
+                    <p class="referral-desc">Refer 5 friends on WhatsApp to unlock withdrawals. Each friend you refer earns you <strong>+KES 100</strong>.</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="referralProgressBar"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span id="referralProgressText">0 of 5 referrals</span>
+                        <span id="referralEarned">+KES 0 earned</span>
+                    </div>
+                    <div class="referral-actions">
+                        <button class="whatsapp-btn" id="whatsappShareBtn">
+                            <i class="fab fa-whatsapp" aria-hidden="true" style="font-size: 1.2rem;"></i>
+                            Share on WhatsApp
+                        </button>
+                    </div>
+                    <div class="referral-code-box">
+                        <div>
+                            <div class="code-label">Your referral code</div>
+                            <div class="code-value" id="referralCodeDisplay">LOADING</div>
+                        </div>
+                        <button class="copy-code-btn" id="copyCodeBtn">
+                            <i class="fas fa-copy" aria-hidden="true"></i> Copy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. VERIFICATION (THIRD) -->
+                <div class="verification-card" id="verificationCard">
+                    <div class="verification-card-header">
+                        <h3><i class="fas fa-shield-alt" aria-hidden="true"></i> Account Activation</h3>
+                        <span class="verification-status" id="verificationStatus">Not activated</span>
+                    </div>
+                    <p class="verification-desc" id="verificationDesc">Send <strong>KES 100</strong> via <strong>M-Pesa Send Money</strong> to the number below, then paste your confirmation message to activate your account. The KES 100 will be refunded to your wallet automatically.</p>
+                    <div class="mpesa-number-row">
+                        <div class="mpesa-number" id="verificationMpesaNumber">0734 872 045</div>
+                        <button class="copy-btn" id="verificationCopyBtn" type="button"><i class="fas fa-copy" aria-hidden="true"></i> Copy</button>
+                    </div>
+                    <textarea class="mpesa-textarea" id="verificationMpesaMsg" placeholder="Paste your M-Pesa confirmation message here...&#10;&#10;Example: TGH8K9L2M1 Confirmed. Ksh100.00 sent to 0734872045 on 5/11/25."></textarea>
+                    <button class="verify-btn" id="verificationVerifyBtn" type="button"><i class="fas fa-check-circle" aria-hidden="true"></i> Verify & Activate Account</button>
+                    <div class="activation-status" id="verificationActStatus"></div>
+                </div>
+
+                <!-- 4. WITHDRAW (LAST) -->
+                <div class="withdraw-cta">
+                    <h3>Ready to cash out?</h3>
+                    <p id="withdrawHint">Complete 1 survey, refer 5 friends, and activate your account to withdraw.</p>
+                    <button class="withdraw-btn" id="withdrawMainBtn" disabled>
+                        <i class="fas fa-wallet" aria-hidden="true"></i> Withdraw Funds
+                    </button>
+                    <p class="withdraw-hint" id="withdrawStatusHint">Surveys: 0 · Referrals: 0/5 · Activation: Pending</p>
+                </div>
+
+                <!-- 5. HELP & SUPPORT (BOTTOM) -->
+                <div class="help-card" id="helpCard">
+                    <div class="help-card-content">
+                        <div class="help-card-icon">
+                            <i class="fas fa-headset" aria-hidden="true"></i>
+                        </div>
+                        <div class="help-card-text">
+                            <h4>Need help?</h4>
+                            <p>Our team at Lucy Corporation is here to help. Reach out anytime.</p>
+                        </div>
+                        <button class="help-btn" id="helpOpenBtn">
+                            <i class="fas fa-life-ring" aria-hidden="true"></i> Contact Support
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            Sponsored by <a href="https://www.lucycorp.com/" target="_blank" rel="noopener">Lucy Corporation</a> · Building better communities
+            <br>
+            <span style="display:inline-block;margin-top:0.4rem;">
+                Need help? <a href="#" id="footerHelpLink" style="text-decoration:underline;">Contact Support</a>
+                · <span style="color:#64748b;">support@lucycorp.com</span>
+            </span>
+        </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">Message</div>
+
+    <!-- Survey Modal -->
+    <div class="modal-overlay" id="surveyModalOverlay" role="dialog" aria-modal="true">
+        <div class="modal" id="surveyModal">
+            <button class="modal-close" id="surveyModalClose" type="button" aria-label="Close">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <div id="surveyModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Confirm Sent Modal -->
+    <div class="modal-overlay top" id="confirmSentOverlay" role="dialog" aria-modal="true">
+        <div class="modal" style="max-width: 400px;">
+            <div class="confirm-sent-content">
+                <div class="confirm-sent-icon">
+                    <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                </div>
+                <h3>Did you send it?</h3>
+                <p>You should have opened WhatsApp with a message to share. Once you've sent it to a friend, confirm below to earn KES 100.</p>
+                <div class="confirm-sent-actions">
+                    <button class="btn-no" id="confirmSentNo">Not yet</button>
+                    <button class="btn-yes" id="confirmSentYes">Yes, sent ✅</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdrawal Center Modal -->
+    <div class="modal-overlay" id="withdrawalOverlay" role="dialog" aria-modal="true">
+        <div class="modal" id="withdrawalModal">
+            <button class="modal-close" id="withdrawalClose" type="button" aria-label="Close">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <div id="withdrawalContent"></div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay top" id="successOverlay" role="dialog" aria-modal="true">
+        <div class="modal" style="max-width: 450px;">
+            <div class="success-content">
+                <div class="success-icon-big">
+                    <i class="fas fa-check" aria-hidden="true"></i>
+                </div>
+                <h3 id="successTitle">Success!</h3>
+                <p id="successMessage">Your action was completed successfully.</p>
+                <div class="success-amount" id="successAmountBox">
+                    <span class="cur">KES </span><span class="amt" id="successAmount">0</span>
+                </div>
+                <button class="btn-done" id="successDoneBtn">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help & Support Modal (email only, no WhatsApp) -->
+    <div class="modal-overlay top" id="helpOverlay" role="dialog" aria-modal="true">
+        <div class="modal" style="max-width: 500px;">
+            <button class="modal-close" id="helpClose" type="button" aria-label="Close">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <h3 style="display:flex;align-items:center;gap:0.6rem;">
+                <span style="width:2.2rem;height:2.2rem;background:#e0e7ff;color:#2563eb;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:1rem;"><i class="fas fa-headset"></i></span>
+                Help & Support
+            </h3>
+            <p class="modal-desc">Our team at <strong>Lucy Corporation</strong> is here for you. Reach out any time — we usually respond within 24 hours.</p>
+
+            <div style="margin-bottom:1.2rem;">
+                <div style="font-size:0.85rem;font-weight:600;color:#334155;margin-bottom:0.5rem;">
+                    <i class="fas fa-envelope" style="color:#2563eb;"></i> Email Support
+                </div>
+                <div class="support-email-row">
+                    <span class="support-email" id="supportEmailDisplay">support@lucycorp.com</span>
+                    <button class="copy-btn" id="copySupportEmailBtn" type="button">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+            </div>
+
+            <div class="support-response-note">
+                <i class="fas fa-clock" aria-hidden="true"></i> Response time: within 24 hours
+            </div>
+
+            <div style="margin-top:1.2rem;">
+                <div style="font-size:0.85rem;font-weight:700;color:#0f172a;margin-bottom:0.6rem;">Quick help topics</div>
+                <details class="faq-item">
+                    <summary>How do referrals work?</summary>
+                    <p>Tap "Share on WhatsApp" on the dashboard and send your unique link to a friend. Once you confirm the message was sent, you earn KES 100. You need 5 confirmed referrals to unlock withdrawals.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Why is my account not activated?</summary>
+                    <p>You must send KES 100 via M-Pesa Send Money to 0734 872 045, then paste the confirmation message into the Activation section on your dashboard. Once verified, your KES 100 is automatically refunded to your wallet.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>When will I receive my withdrawal?</summary>
+                    <p>Withdrawals are processed before midnight on the same day you submit the request. You'll receive an M-Pesa confirmation SMS once the money is sent.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>I forgot my password — what do I do?</summary>
+                    <p>Password recovery is currently unavailable. If you can't remember your password, you'll need to create a new account using a different email address.</p>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        'use strict';
+
+        const STORAGE_KEY = 'surveyke_users';
+        const SESSION_KEY = 'surveyke_session';
+        const MPESA_NUMBER_RAW = '0734872045';
+        const MPESA_NUMBER_DISPLAY = '0734 872 045';
+        const ACTIVATION_FEE = 100;
+        const REFERRAL_TARGET = 5;
+        const REFERRAL_REWARD = 100;
+        const SUPPORT_EMAIL = 'support@lucycorp.com';
+
+        function getUsers() {
+            try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }
+            catch (e) { console.error(e); return {}; }
+        }
+        function saveUsers(data) {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+            catch (e) { console.error(e); }
+        }
+        function getSession() {
+            try { const raw = localStorage.getItem(SESSION_KEY); return raw ? JSON.parse(raw) : null; }
+            catch (e) { return null; }
+        }
+        function setSession(email) {
+            try { localStorage.setItem(SESSION_KEY, JSON.stringify({ email, loginTime: Date.now() })); } catch (e) {}
+        }
+        function clearSession() {
+            try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+        }
+
+        let currentUserEmail = null;
+        let users = getUsers();
+        let currentSurvey = null;
+        let currentAnswers = {};
+
+        // ==========================================
+        // SURVEYS
+        // ==========================================
+        const SURVEYS = [
+            { id: 'jamaa-1', title: 'Jamaa Supermarket', field: 'Retail', description: 'Share your shopping experience at Jamaa Supermarket and help us improve.', questions: [
+                { id: 'q1', text: 'Which branch of Jamaa Supermarket do you shop in?', type: 'radio', points: 40, options: ['Nakuru Town', 'Naivasha', 'Gilgil', 'Nyahururu', 'Nairobi (Kasarani)', 'Other'] },
+                { id: 'q2', text: 'Which location should we open another branch?', type: 'radio', points: 40, options: ['Nakuru CBD', 'Naivasha Town', 'Gilgil', 'Nyahururu', 'Nairobi West', 'Mombasa Road', 'Other'] },
+                { id: 'q3', text: 'What is the highest amount you have spent in one visit?', type: 'radio', points: 40, options: ['Less than KES 1,000', 'KES 1,000 – 5,000', 'KES 5,001 – 10,000', 'KES 10,001 – 20,000', 'Over KES 20,000'] },
+                { id: 'q4', text: 'Which items do you normally buy? (Select all)', type: 'checkbox', points: 40, options: ['Groceries', 'Fresh produce', 'Dairy & eggs', 'Meat & poultry', 'Beverages', 'Household', 'Personal care', 'Other'] },
+                { id: 'q5', text: 'Rate Jamaa Supermarket overall (1 = poor, 10 = excellent)', type: 'radio', points: 40, options: ['1','2','3','4','5','6','7','8','9','10'] },
+                { id: 'q6', text: 'Rate the layout and organization', type: 'radio', points: 40, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q7', text: 'Rate our services (staff, checkout)', type: 'radio', points: 40, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q8', text: 'How often do you visit?', type: 'radio', points: 35, options: ['Daily', 'Several times a week', 'Once a week', 'Several times a month', 'Once a month', 'Rarely'] },
+                { id: 'q9', text: 'Why did you choose Jamaa? (Select all)', type: 'checkbox', points: 35, options: ['Accessible', 'Good services', 'Affordable prices', 'Wide variety', 'Clean & organized', 'Loyalty programs', 'Fast checkout', 'Other'] }
+            ]},
+            { id: 'naivas-1', title: 'Naivas Supermarket', field: 'Retail', description: 'Help Naivas serve you better by sharing your honest feedback.', questions: [
+                { id: 'q1', text: 'Which Naivas branch do you visit most?', type: 'radio', points: 40, options: ['Nakuru', 'Nairobi CBD', 'Westlands', 'Karen', 'Thika', 'Mombasa', 'Other'] },
+                { id: 'q2', text: 'How often do you shop at Naivas?', type: 'radio', points: 40, options: ['Daily', 'Weekly', 'Bi-weekly', 'Monthly', 'Rarely'] },
+                { id: 'q3', text: 'Average amount spent per visit?', type: 'radio', points: 40, options: ['Under KES 1,000', 'KES 1,000 – 3,000', 'KES 3,001 – 7,000', 'Over KES 7,000'] },
+                { id: 'q4', text: 'Rate product variety', type: 'radio', points: 40, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q5', text: 'Rate cleanliness', type: 'radio', points: 40, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q6', text: 'Rate staff friendliness', type: 'radio', points: 40, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q7', text: 'Is the loyalty card worth it?', type: 'radio', points: 40, options: ['Yes, great value', 'Somewhat', 'Not really', 'Never used it'] },
+                { id: 'q8', text: 'Which categories do you buy? (Select all)', type: 'checkbox', points: 40, options: ['Fresh produce', 'Meat', 'Dairy', 'Bakery', 'Household', 'Electronics', 'Clothing'] },
+                { id: 'q9', text: 'Would you recommend Naivas to a friend?', type: 'radio', points: 40, options: ['Definitely', 'Probably', 'Not sure', 'Probably not', 'Definitely not'] },
+                { id: 'q10', text: 'Suggest one improvement', type: 'text', points: 40, options: [] }
+            ]},
+            { id: 'jumia-1', title: 'Jumia Kenya', field: 'E-commerce', description: 'Share your online shopping experience with Jumia Kenya.', questions: [
+                { id: 'q1', text: 'How often do you shop on Jumia?', type: 'radio', points: 40, options: ['Weekly', 'Monthly', 'Every few months', 'Rarely', 'Never'] },
+                { id: 'q2', text: 'What do you mostly buy? (Select all)', type: 'checkbox', points: 40, options: ['Electronics', 'Fashion', 'Home & kitchen', 'Beauty', 'Groceries', 'Books', 'Other'] },
+                { id: 'q3', text: 'Rate delivery speed', type: 'radio', points: 40, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q4', text: 'Rate product accuracy vs description', type: 'radio', points: 40, options: ['Always accurate', 'Mostly accurate', 'Sometimes off', 'Often wrong'] },
+                { id: 'q5', text: 'Rate packaging quality', type: 'radio', points: 40, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q6', text: 'Rate customer service', type: 'radio', points: 40, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q7', text: 'How easy is the return process?', type: 'radio', points: 40, options: ['Very easy', 'Easy', 'Neutral', 'Hard', 'Never returned'] },
+                { id: 'q8', text: 'Rate the Jumia app usability', type: 'radio', points: 40, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q9', text: 'Preferred payment method', type: 'radio', points: 40, options: ['M-Pesa', 'Card', 'Cash on delivery', 'Jumia Pay'] },
+                { id: 'q10', text: 'Are prices fair compared to local shops?', type: 'radio', points: 40, options: ['Better', 'About the same', 'Worse', 'Not sure'] },
+                { id: 'q11', text: 'Rate your trust in Jumia', type: 'radio', points: 40, options: ['Fully trust', 'Mostly trust', 'Neutral', 'Some doubts', 'Do not trust'] },
+                { id: 'q12', text: 'Would you recommend Jumia?', type: 'radio', points: 40, options: ['Definitely', 'Probably', 'Not sure', 'No'] }
+            ]},
+            { id: 'bolt-1', title: 'Bolt Kenya', field: 'Transport', description: 'Help Bolt improve your ride experience.', questions: [
+                { id: 'q1', text: 'How often do you use Bolt?', type: 'radio', points: 40, options: ['Daily', 'Several times a week', 'Weekly', 'Monthly', 'Rarely'] },
+                { id: 'q2', text: 'Main trip type', type: 'radio', points: 40, options: ['Commute', 'Airport', 'Night out', 'Shopping', 'Other'] },
+                { id: 'q3', text: 'Rate driver professionalism', type: 'radio', points: 40, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q4', text: 'Rate vehicle cleanliness', type: 'radio', points: 40, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q5', text: 'Rate the Bolt app', type: 'radio', points: 40, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q6', text: 'Are prices fair?', type: 'radio', points: 40, options: ['Very fair', 'Fair', 'Neutral', 'Unfair', 'Very unfair'] },
+                { id: 'q7', text: 'Rate safety during trips', type: 'radio', points: 40, options: ['Very safe', 'Safe', 'Neutral', 'Unsafe'] },
+                { id: 'q8', text: 'Average wait time for pickup', type: 'radio', points: 40, options: ['Under 3 min', '3–5 min', '5–10 min', 'Over 10 min'] },
+                { id: 'q9', text: 'Preferred payment', type: 'radio', points: 40, options: ['M-Pesa', 'Cash', 'Card', 'Bolt credits'] },
+                { id: 'q10', text: 'Would you recommend Bolt?', type: 'radio', points: 40, options: ['Definitely', 'Probably', 'Not sure', 'No'] }
+            ]},
+            { id: 'mpesa-1', title: 'Safaricom M-Pesa', field: 'Telecom', description: 'Share your M-Pesa experience and help improve mobile money.', questions: [
+                { id: 'q1', text: 'How often do you use M-Pesa?', type: 'radio', points: 50, options: ['Multiple times a day', 'Daily', 'Weekly', 'Rarely'] },
+                { id: 'q2', text: 'Which M-Pesa services do you use? (Select all)', type: 'checkbox', points: 50, options: ['Send money', 'Lipa na M-Pesa', 'Buy airtime', 'Fuliza', 'M-Shwari', 'International transfer'] },
+                { id: 'q3', text: 'Are transaction fees fair?', type: 'radio', points: 50, options: ['Very fair', 'Fair', 'Neutral', 'Unfair', 'Very unfair'] },
+                { id: 'q4', text: 'Rate the M-Pesa app', type: 'radio', points: 50, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q5', text: 'Rate customer care (234)', type: 'radio', points: 50, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q6', text: 'Any security concerns?', type: 'radio', points: 50, options: ['Very secure', 'Mostly secure', 'Some concerns', 'Major concerns'] },
+                { id: 'q7', text: 'Have you used alternatives (Airtel Money, T-Kash)?', type: 'radio', points: 50, options: ['Yes regularly', 'Occasionally', 'Tried once', 'Never'] },
+                { id: 'q8', text: 'Which feature would you like added?', type: 'text', points: 50, options: [] },
+                { id: 'q9', text: 'Rate your trust in M-Pesa', type: 'radio', points: 50, options: ['Fully trust', 'Mostly trust', 'Neutral', 'Some doubts', 'Do not trust'] },
+                { id: 'q10', text: 'Have you experienced downtime?', type: 'radio', points: 50, options: ['Often', 'Sometimes', 'Rarely', 'Never'] },
+                { id: 'q11', text: 'Overall satisfaction with M-Pesa', type: 'radio', points: 50, options: ['Very satisfied', 'Satisfied', 'Neutral', 'Dissatisfied', 'Very dissatisfied'] },
+                { id: 'q12', text: 'Would you recommend M-Pesa?', type: 'radio', points: 50, options: ['Definitely', 'Probably', 'Not sure', 'No'] }
+            ]},
+            { id: 'kcb-1', title: 'KCB Bank', field: 'Banking', description: 'Help KCB improve banking for everyone.', questions: [
+                { id: 'q1', text: 'Do you have a KCB account?', type: 'radio', points: 50, options: ['Yes, personal', 'Yes, business', 'Both', 'No'] },
+                { id: 'q2', text: 'How do you mostly bank with KCB?', type: 'radio', points: 50, options: ['Branch', 'Mobile app', 'ATM', 'Agency', 'Online'] },
+                { id: 'q3', text: 'Rate the KCB mobile app', type: 'radio', points: 50, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q4', text: 'Have you taken a KCB loan?', type: 'radio', points: 50, options: ['Yes, personal', 'Yes, business', 'Both', 'No'] },
+                { id: 'q5', text: 'Rate loan experience', type: 'radio', points: 50, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor', 'Never loaned'] },
+                { id: 'q6', text: 'Are ATM services reliable?', type: 'radio', points: 50, options: ['Always', 'Mostly', 'Sometimes down', 'Often down'] },
+                { id: 'q7', text: 'Rate staff helpfulness', type: 'radio', points: 50, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q8', text: 'Average branch wait time', type: 'radio', points: 50, options: ['Under 10 min', '10–20 min', '20–30 min', 'Over 30 min'] },
+                { id: 'q9', text: 'Are fees fair?', type: 'radio', points: 50, options: ['Very fair', 'Fair', 'Neutral', 'Unfair'] },
+                { id: 'q10', text: 'Overall satisfaction with KCB', type: 'radio', points: 50, options: ['Very satisfied', 'Satisfied', 'Neutral', 'Dissatisfied'] },
+                { id: 'q11', text: 'Would you recommend KCB?', type: 'radio', points: 50, options: ['Definitely', 'Probably', 'Not sure', 'No'] }
+            ]},
+            { id: 'equity-1', title: 'Equity Bank', field: 'Banking', description: 'Give Equity Bank your feedback to help them serve you better.', questions: [
+                { id: 'q1', text: 'Which Equity Bank services do you use? (Select all)', type: 'checkbox', points: 48, options: ['Savings', 'Current account', 'Loans', 'Mobile app', 'Agency banking', 'Cards'] },
+                { id: 'q2', text: 'Rate the Equity mobile app', type: 'radio', points: 48, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q3', text: 'How often do you use agency banking?', type: 'radio', points: 48, options: ['Weekly', 'Monthly', 'Rarely', 'Never'] },
+                { id: 'q4', text: 'Rate loan products', type: 'radio', points: 48, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q5', text: 'Rate customer care', type: 'radio', points: 48, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q6', text: 'Rate branch experience', type: 'radio', points: 48, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q7', text: 'Which digital channels do you trust most?', type: 'radio', points: 48, options: ['Mobile app', 'USSD', 'Online banking', 'Agency'] },
+                { id: 'q8', text: 'Are savings products attractive?', type: 'radio', points: 48, options: ['Very attractive', 'Attractive', 'Neutral', 'Not attractive'] },
+                { id: 'q9', text: 'Overall satisfaction with Equity', type: 'radio', points: 48, options: ['Very satisfied', 'Satisfied', 'Neutral', 'Dissatisfied'] },
+                { id: 'q10', text: 'Would you recommend Equity?', type: 'radio', points: 48, options: ['Definitely', 'Probably', 'Not sure', 'No'] }
+            ]},
+            { id: 'kplc-1', title: 'Kenya Power (KPLC)', field: 'Utilities', description: 'Help Kenya Power improve electricity services.', questions: [
+                { id: 'q1', text: 'Are you on prepaid or postpaid?', type: 'radio', points: 36, options: ['Prepaid', 'Postpaid', 'Not sure'] },
+                { id: 'q2', text: 'How often do you experience power outages?', type: 'radio', points: 36, options: ['Daily', 'Weekly', 'Monthly', 'Rarely', 'Never'] },
+                { id: 'q3', text: 'Rate ease of buying tokens', type: 'radio', points: 36, options: ['Very easy', 'Easy', 'Neutral', 'Hard', 'Very hard'] },
+                { id: 'q4', text: 'Rate clarity of your bill', type: 'radio', points: 36, options: ['Very clear', 'Clear', 'Neutral', 'Confusing'] },
+                { id: 'q5', text: 'Rate customer service', type: 'radio', points: 36, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q6', text: 'Rate the KPLC app', type: 'radio', points: 36, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor', 'Never used'] },
+                { id: 'q7', text: 'Overall satisfaction with KPLC', type: 'radio', points: 36, options: ['Very satisfied', 'Satisfied', 'Neutral', 'Dissatisfied', 'Very dissatisfied'] },
+                { id: 'q8', text: 'What improvement matters most?', type: 'radio', points: 36, options: ['Fewer outages', 'Lower prices', 'Better app', 'Faster response'] },
+                { id: 'q9', text: 'Would you recommend KPLC?', type: 'radio', points: 32, options: ['Definitely', 'Probably', 'Not sure', 'No'] }
+            ]},
+            { id: 'mnu-1', title: 'Mama Ngina University', field: 'Education', description: 'Share your thoughts on Mama Ngina University and its programs.', questions: [
+                { id: 'q1', text: 'Are you a student, alumni, or prospective student?', type: 'radio', points: 70, options: ['Current student', 'Alumni', 'Prospective', 'Parent'] },
+                { id: 'q2', text: 'Which program are/were you in?', type: 'radio', points: 70, options: ['Business', 'IT', 'Education', 'Engineering', 'Health', 'Other'] },
+                { id: 'q3', text: 'Rate the admission process', type: 'radio', points: 70, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q4', text: 'Rate the online student portal', type: 'radio', points: 70, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q5', text: 'Rate facilities (labs, library)', type: 'radio', points: 70, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q6', text: 'Rate lecturers and teaching', type: 'radio', points: 70, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q7', text: 'Rate student support services', type: 'radio', points: 70, options: ['Excellent', 'Very good', 'Good', 'Fair', 'Poor'] },
+                { id: 'q8', text: 'Is the fee structure clear?', type: 'radio', points: 70, options: ['Very clear', 'Clear', 'Neutral', 'Confusing'] },
+                { id: 'q9', text: 'Would you recommend MNU?', type: 'radio', points: 70, options: ['Definitely', 'Probably', 'Not sure', 'No'] },
+                { id: 'q10', text: 'Suggest one improvement', type: 'text', points: 70, options: [] }
+            ]}
+        ];
+
+        // ---------- DOM ----------
+        const $ = (id) => document.getElementById(id);
+        const authScreen = $('authScreen');
+        const dashboardScreen = $('dashboardScreen');
+        const loginForm = $('loginForm');
+        const registerForm = $('registerForm');
+        const loginTab = $('loginTab');
+        const registerTab = $('registerTab');
+        const switchAuthText = $('switchAuthText');
+        const userHeader = $('userHeader');
+        const headerUsername = $('headerUsername');
+        const logoutBtn = $('logoutBtn');
+        const userNameDisplay = $('userNameDisplay');
+        const walletBalance = $('walletBalance');
+        const withdrawableAmount = $('withdrawableAmount');
+        const surveyList = $('surveyList');
+        const surveyCount = $('surveyCount');
+        const toast = $('toast');
+
+        const surveyModalOverlay = $('surveyModalOverlay');
+        const surveyModalContent = $('surveyModalContent');
+        const surveyModalClose = $('surveyModalClose');
+        const confirmSentOverlay = $('confirmSentOverlay');
+        const withdrawalOverlay = $('withdrawalOverlay');
+        const withdrawalContent = $('withdrawalContent');
+        const withdrawalClose = $('withdrawalClose');
+        const successOverlay = $('successOverlay');
+        const successTitle = $('successTitle');
+        const successMessage = $('successMessage');
+        const successAmountBox = $('successAmountBox');
+        const successAmount = $('successAmount');
+        const successDoneBtn = $('successDoneBtn');
+
+        const referralProgressBar = $('referralProgressBar');
+        const referralProgressText = $('referralProgressText');
+        const referralEarned = $('referralEarned');
+        const referralBadge = $('referralBadge');
+        const referralCodeDisplay = $('referralCodeDisplay');
+        const whatsappShareBtn = $('whatsappShareBtn');
+        const copyCodeBtn = $('copyCodeBtn');
+
+        const verificationCard = $('verificationCard');
+        const verificationStatus = $('verificationStatus');
+        const verificationDesc = $('verificationDesc');
+        const verificationMpesaNumber = $('verificationMpesaNumber');
+        const verificationCopyBtn = $('verificationCopyBtn');
+        const verificationMpesaMsg = $('verificationMpesaMsg');
+        const verificationVerifyBtn = $('verificationVerifyBtn');
+        const verificationActStatus = $('verificationActStatus');
+
+        const withdrawMainBtn = $('withdrawMainBtn');
+        const withdrawStatusHint = $('withdrawStatusHint');
+        const withdrawHint = $('withdrawHint');
+        const resumeBanner = $('resumeBanner');
+        const resumeBannerText = $('resumeBannerText');
+        const resumeBtn = $('resumeBtn');
+
+        const helpOverlay = $('helpOverlay');
+        const helpClose = $('helpClose');
+        const helpOpenBtn = $('helpOpenBtn');
+        const footerHelpLink = $('footerHelpLink');
+        const copySupportEmailBtn = $('copySupportEmailBtn');
+
+        // ==========================================
+        // HELPERS
+        // ==========================================
+        function showToast(msg, type) {
+            toast.textContent = msg;
+            toast.className = 'toast show';
+            if (type === 'success') toast.classList.add('success');
+            else if (type === 'error') toast.classList.add('error');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        function escapeHTML(str) {
+            return String(str == null ? '' : str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+        }
+
+        function generateReferralCode(name, email) {
+            const base = (name || email || 'USER').replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 4) || 'USER';
+            const num = Math.floor(1000 + Math.random() * 9000);
+            return base + num;
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                return navigator.clipboard.writeText(text);
+            }
+            return new Promise((resolve, reject) => {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed'; ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); resolve(); }
+                catch (e) { reject(e); }
+                document.body.removeChild(ta);
+            });
+        }
+
+        // ==========================================
+        // USER DATA
+        // ==========================================
+        function ensureUserData(email) {
+            if (!users[email]) return;
+            const u = users[email];
+            if (u.wallet === undefined) u.wallet = 0;
+            if (u.activated === undefined) u.activated = false;
+            if (!Array.isArray(u.completedSurveys)) u.completedSurveys = [];
+            if (!u.surveyResponses) u.surveyResponses = {};
+            if (u.mpesaMessage === undefined) u.mpesaMessage = '';
+            if (u.activationFeeRefunded === undefined) u.activationFeeRefunded = false;
+            if (!Array.isArray(u.referrals)) u.referrals = [];
+            if (!u.referralCode) u.referralCode = generateReferralCode(u.name, u.email);
+            if (u.pendingWithdrawal === undefined) u.pendingWithdrawal = null;
+            if (u.withdrawalLocked === undefined) u.withdrawalLocked = false;
+            if (u.lastWithdrawal === undefined) u.lastWithdrawal = null;
+            saveUsers(users);
+        }
+
+        function getConfirmedReferrals(user) {
+            return (user.referrals || []).filter(r => r.confirmed).length;
+        }
+
+        function isFullyReferred(user) {
+            return getConfirmedReferrals(user) >= REFERRAL_TARGET;
+        }
+
+        // ==========================================
+        // RENDER
+        // ==========================================
+        function updateWalletUI() {
+            if (!currentUserEmail) return;
+            const user = users[currentUserEmail];
+            const balance = user.wallet || 0;
+            walletBalance.textContent = 'KES ' + balance.toLocaleString();
+            withdrawableAmount.textContent = 'KES ' + balance.toLocaleString();
+        }
+
+        function updateReferralUI() {
+            if (!currentUserEmail) return;
+            const user = users[currentUserEmail];
+            const confirmed = getConfirmedReferrals(user);
+            const pct = Math.min(100, (confirmed / REFERRAL_TARGET) * 100);
+            referralProgressBar.style.width = pct + '%';
+            if (confirmed >= REFERRAL_TARGET) {
+                referralProgressBar.classList.add('complete');
+                referralBadge.classList.add('complete');
+                referralBadge.textContent = '🏆 Complete!';
+                referralProgressText.textContent = '5 of 5 referrals';
+                referralProgressText.classList.add('complete-text');
+                whatsappShareBtn.disabled = true;
+                whatsappShareBtn.innerHTML = '<i class="fas fa-check-circle"></i> All 5 referrals sent';
+            } else {
+                referralProgressBar.classList.remove('complete');
+                referralBadge.classList.remove('complete');
+                referralBadge.textContent = confirmed + '/5 referrals';
+                referralProgressText.textContent = confirmed + ' of 5 referrals';
+                referralProgressText.classList.remove('complete-text');
+                whatsappShareBtn.disabled = false;
+                whatsappShareBtn.innerHTML = '<i class="fab fa-whatsapp" style="font-size:1.2rem;"></i> Share on WhatsApp';
+            }
+            referralEarned.textContent = '+KES ' + (confirmed * REFERRAL_REWARD) + ' earned';
+            referralCodeDisplay.textContent = user.referralCode || '—';
+        }
+
+        function updateVerificationUI() {
+            if (!currentUserEmail) return;
+            const user = users[currentUserEmail];
+            const activated = !!user.activated;
+            if (activated) {
+                verificationCard.classList.add('done');
+                verificationStatus.classList.add('done');
+                verificationStatus.textContent = '✅ Activated';
+                verificationDesc.innerHTML = 'Your account is activated. KES 100 has been refunded to your wallet.';
+                verificationMpesaMsg.value = '';
+                verificationActStatus.className = 'activation-status success';
+                verificationActStatus.innerHTML = '<i class="fas fa-check-circle"></i> You\'re all set. Proceed to withdraw below.';
+            } else {
+                verificationCard.classList.remove('done');
+                verificationStatus.classList.remove('done');
+                verificationStatus.textContent = 'Not activated';
+                verificationDesc.innerHTML = 'Send <strong>KES 100</strong> via <strong>M-Pesa Send Money</strong> to the number below, then paste your confirmation message to activate your account. The KES 100 will be refunded to your wallet automatically.';
+                verificationActStatus.className = 'activation-status';
+                verificationActStatus.innerHTML = '';
+            }
+        }
+
+        function updateWithdrawUI() {
+            if (!currentUserEmail) return;
+            const user = users[currentUserEmail];
+            const confirmed = getConfirmedReferrals(user);
+            const fullyReferred = confirmed >= REFERRAL_TARGET;
+            const activated = !!user.activated;
+            const completedCount = (user.completedSurveys || []).length;
+            const hasCompletedSurvey = completedCount >= 1;
+            const alreadyWithdrawn = !!user.withdrawalLocked;
+
+            const canWithdraw = hasCompletedSurvey && fullyReferred && activated && !alreadyWithdrawn;
+            withdrawMainBtn.disabled = !canWithdraw;
+
+            if (alreadyWithdrawn) {
+                withdrawMainBtn.innerHTML = '<i class="fas fa-check-circle"></i> Withdrawal Submitted';
+                withdrawHint.textContent = 'Your withdrawal of KES ' + ((user.lastWithdrawal && user.lastWithdrawal.amount) || 0).toLocaleString() + ' to ' + ((user.lastWithdrawal && user.lastWithdrawal.phone) || '') + ' is being processed. You\'ll receive an SMS before midnight today.';
+                withdrawStatusHint.textContent = '✅ Request sent · Processing before midnight';
+                return;
+            }
+
+            withdrawMainBtn.innerHTML = '<i class="fas fa-wallet"></i> Withdraw Funds';
+
+            let hint = '';
+            hint += 'Surveys: ' + (hasCompletedSurvey ? '✓' : '0');
+            hint += ' · Referrals: ' + confirmed + '/5' + (fullyReferred ? ' ✓' : '');
+            hint += ' · Activation: ' + (activated ? 'Active ✓' : 'Pending');
+            withdrawStatusHint.textContent = hint;
+
+            if (!hasCompletedSurvey) {
+                withdrawHint.textContent = 'Complete at least 1 survey to get started.';
+            } else if (!fullyReferred) {
+                withdrawHint.textContent = 'Survey done! Now refer 5 friends to unlock withdrawals.';
+            } else if (!activated) {
+                withdrawHint.textContent = 'Referrals complete! Activate your account to withdraw.';
+            } else {
+                withdrawHint.textContent = 'All requirements met! Tap to withdraw your funds.';
+            }
+        }
+
+        function renderSurveys() {
+            if (!currentUserEmail) return;
+            const user = users[currentUserEmail];
+            const completed = user.completedSurveys || [];
+            surveyList.innerHTML = SURVEYS.map(s => {
+                const total = s.questions.reduce((sum, q) => sum + q.points, 0);
+                const done = completed.includes(s.id);
+                return `
+                    <div class="survey-card">
+                        <div class="survey-header">
+                            <div class="survey-icon"><i class="fas fa-building" aria-hidden="true"></i></div>
+                            <span class="reward-tag">KES ${total}</span>
+                        </div>
+                        <h4>${escapeHTML(s.title)}</h4>
+                        <div class="survey-meta">
+                            <span><i class="fas fa-tag" aria-hidden="true"></i> ${escapeHTML(s.field)}</span>
+                            <span><i class="fas fa-list-ol" aria-hidden="true"></i> ${s.questions.length} Qs</span>
+                        </div>
+                        <button class="btn-survey" data-id="${s.id}" ${done ? 'disabled' : ''}>
+                            ${done ? '<i class="fas fa-check-circle"></i> Completed' : '<i class="fas fa-play"></i> Start survey'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            surveyCount.textContent = SURVEYS.length + ' surveys';
+            surveyList.querySelectorAll('.btn-survey').forEach(btn => {
+                if (!btn.disabled) btn.addEventListener('click', () => {
+                    const s = SURVEYS.find(x => x.id === btn.dataset.id);
+                    if (s) openSurvey(s);
+                });
+            });
+        }
+
+        function updateAllUI() {
+            updateWalletUI();
+            updateReferralUI();
+            updateVerificationUI();
+            updateWithdrawUI();
+            renderSurveys();
+            updateResumeBanner();
+        }
+
+        // ==========================================
+        // RESUME BANNER
+        // ==========================================
+        function updateResumeBanner() {
+            if (!currentUserEmail) return;
+            const user = users[currentUserEmail];
+            const pw = user.pendingWithdrawal;
+            if (pw && pw.step) {
+                resumeBanner.classList.remove('hidden');
+                if (pw.step === 'activation') {
+                    resumeBannerText.textContent = 'Welcome back! You were activating your account. Resume to continue.';
+                } else if (pw.step === 'withdraw') {
+                    resumeBannerText.textContent = 'Welcome back! You were about to withdraw KES ' + (pw.amount || '') + '. Resume to continue.';
+                } else {
+                    resumeBannerText.textContent = 'Welcome back! Resume where you left off.';
+                }
+            } else {
+                resumeBanner.classList.add('hidden');
+            }
+        }
+
+        resumeBtn.addEventListener('click', () => {
+            if (!currentUserEmail) return;
+            openWithdrawalCenter(true);
+        });
+
+        // ==========================================
+        // SURVEY
+        // ==========================================
+        function openSurvey(survey) {
+            if (!currentUserEmail) return;
+            const user = users[currentUserEmail];
+            if (user.completedSurveys.includes(survey.id)) {
+                showToast('You already completed this survey.', 'error');
+                return;
+            }
+            currentSurvey = survey;
+            currentAnswers = {};
+            renderSurveyModal();
+            surveyModalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSurvey() {
+            surveyModalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            currentSurvey = null;
+            currentAnswers = {};
+        }
+
+        function renderSurveyModal() {
+            if (!currentSurvey) return;
+            let html = '<h3>' + escapeHTML(currentSurvey.title) + '</h3>';
+            html += '<p class="modal-desc">' + escapeHTML(currentSurvey.description) + '</p>';
+            currentSurvey.questions.forEach((q, i) => {
+                html += '<div class="survey-question">';
+                html += '<p><span class="q-number">Q' + (i+1) + '.</span> ' + escapeHTML(q.text) + ' <span class="q-points">(KES ' + q.points + ')</span></p>';
+                if (q.type === 'radio') {
+                    html += '<div class="question-options">';
+                    q.options.forEach(opt => {
+                        const checked = currentAnswers[q.id] === opt ? 'checked' : '';
+                        html += '<label class="option-label ' + (checked?'selected':'') + '"><input type="radio" name="' + q.id + '" value="' + escapeHTML(opt) + '" ' + checked + ' data-qid="' + q.id + '"> ' + escapeHTML(opt) + '</label>';
+                    });
+                    html += '</div>';
+                } else if (q.type === 'checkbox') {
+                    const sel = currentAnswers[q.id] || [];
+                    html += '<div class="question-options">';
+                    q.options.forEach(opt => {
+                        const checked = sel.includes(opt) ? 'checked' : '';
+                        html += '<label class="option-label ' + (checked?'selected':'') + '"><input type="checkbox" name="' + q.id + '" value="' + escapeHTML(opt) + '" ' + checked + ' data-qid="' + q.id + '"> ' + escapeHTML(opt) + '</label>';
+                    });
+                    html += '</div>';
+                } else if (q.type === 'text') {
+                    const val = currentAnswers[q.id] || '';
+                    html += '<input type="text" class="text-answer" data-qid="' + q.id + '" value="' + escapeHTML(val) + '" placeholder="Type your answer...">';
+                }
+                html += '</div>';
+            });
+            const total = currentSurvey.questions.reduce((s, q) => s + q.points, 0);
+            html += '<button class="survey-submit-btn" id="surveySubmitBtn"><i class="fas fa-check-circle"></i> Submit & Earn KES ' + total + '</button>';
+            surveyModalContent.innerHTML = html;
+
+            surveyModalContent.querySelectorAll('.option-label input').forEach(input => {
+                input.addEventListener('change', handleOptionChange);
+                input.closest('.option-label').addEventListener('click', e => {
+                    if (e.target.tagName !== 'INPUT') {
+                        input.checked = !input.checked;
+                        input.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
+            });
+            surveyModalContent.querySelectorAll('.text-answer').forEach(input => {
+                input.addEventListener('input', e => {
+                    currentAnswers[e.target.dataset.qid] = e.target.value.trim();
+                });
+            });
+            $('surveySubmitBtn').addEventListener('click', submitSurvey);
+        }
+
+        function handleOptionChange(e) {
+            const input = e.target;
+            const qid = input.dataset.qid;
+            if (input.type === 'radio') {
+                surveyModalContent.querySelectorAll('input[name="' + qid + '"]').forEach(r => {
+                    if (r !== input) { r.checked = false; r.closest('.option-label').classList.remove('selected'); }
+                });
+                if (input.checked) { input.closest('.option-label').classList.add('selected'); currentAnswers[qid] = input.value; }
+            } else {
+                if (!currentAnswers[qid]) currentAnswers[qid] = [];
+                if (input.checked) {
+                    input.closest('.option-label').classList.add('selected');
+                    if (!currentAnswers[qid].includes(input.value)) currentAnswers[qid].push(input.value);
+                } else {
+                    input.closest('.option-label').classList.remove('selected');
+                    currentAnswers[qid] = currentAnswers[qid].filter(v => v !== input.value);
+                    if (currentAnswers[qid].length === 0) delete currentAnswers[qid];
+                }
+            }
+        }
+
+        function submitSurvey() {
+            if (!currentSurvey || !currentUserEmail) return;
+            for (const q of currentSurvey.questions) {
+                if (q.type === 'radio' || q.type === 'text') {
+                    if (!currentAnswers[q.id] || !String(currentAnswers[q.id]).trim()) {
+                        showToast('Please answer: ' + q.text.slice(0, 45) + '...', 'error'); return;
+                    }
+                } else if (q.type === 'checkbox') {
+                    if (!currentAnswers[q.id] || currentAnswers[q.id].length === 0) {
+                        showToast('Please answer: ' + q.text.slice(0, 45) + '...', 'error'); return;
+                    }
+                }
+            }
+            const total = currentSurvey.questions.reduce((s, q) => s + q.points, 0);
+            const user = users[currentUserEmail];
+            if (user.completedSurveys.includes(currentSurvey.id)) {
+                showToast('You already completed this survey.', 'error');
+                closeSurvey(); return;
+            }
+            user.completedSurveys.push(currentSurvey.id);
+            user.wallet = (user.wallet || 0) + total;
+            user.surveyResponses[currentSurvey.id] = { answers: currentAnswers, reward: total, date: new Date().toISOString() };
+            saveUsers(users);
+            closeSurvey();
+            updateAllUI();
+            showSuccessModal('Survey completed! 🎉', 'Your reward has been added to your wallet.', total);
+        }
+
+        surveyModalClose.addEventListener('click', closeSurvey);
+        surveyModalOverlay.addEventListener('click', e => { if (e.target === surveyModalOverlay) closeSurvey(); });
+
+        // ==========================================
+        // REFERRAL
+        // ==========================================
+        whatsappShareBtn.addEventListener('click', () => {
+            if (!currentUserEmail) return;
+            const user = users[currentUserEmail];
+            if (isFullyReferred(user)) {
+                showToast('You have completed all 5 referrals!', 'success');
+                return;
+            }
+            const code = user.referralCode;
+            const baseUrl = window.location.origin + window.location.pathname;
+            const link = baseUrl + '?ref=' + encodeURIComponent(code);
+            const msg = 'Hey! I\'m earning real KES from SurveyKE 🇰🇪 Complete surveys about Kenyan brands and get paid. Join with my code: ' + code + ' 👉 ' + link;
+            const waUrl = 'https://wa.me/?text=' + encodeURIComponent(msg);
+            window.open(waUrl, '_blank');
+            setTimeout(() => {
+                confirmSentOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }, 500);
+        });
+
+        $('confirmSentYes').addEventListener('click', () => {
+            confirmSentOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            if (!currentUserEmail) return;
+            const user = users[currentUserEmail];
+            if (isFullyReferred(user)) {
+                showToast('All 5 referrals already complete!', 'success');
+                return;
+            }
+            user.referrals.push({ code: 'REF-' + Date.now(), date: new Date().toISOString(), confirmed: true });
+            user.wallet = (user.wallet || 0) + REFERRAL_REWARD;
+            saveUsers(users);
+            updateAllUI();
+            const confirmed = getConfirmedReferrals(user);
+            if (confirmed >= REFERRAL_TARGET) {
+                showSuccessModal('🏆 All 5 referrals complete!', 'You earned KES 500 from referrals. Now activate your account to withdraw.', 500);
+            } else {
+                showToast('✅ Referral confirmed! +KES ' + REFERRAL_REWARD + ' (' + confirmed + '/5)', 'success');
+            }
+        });
+
+        $('confirmSentNo').addEventListener('click', () => {
+            confirmSentOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+
+        copyCodeBtn.addEventListener('click', () => {
+            if (!currentUserEmail) return;
+            const user = users[currentUserEmail];
+            copyToClipboard(user.referralCode).then(() => {
+                showToast('Referral code copied!', 'success');
+            }).catch(() => showToast('Could not copy. Please copy manually.', 'error'));
+        });
+
+        // ==========================================
+        // VERIFICATION (on dashboard)
+        // ==========================================
+        verificationCopyBtn.addEventListener('click', () => {
+            copyToClipboard(MPESA_NUMBER_RAW).then(() => {
+                showToast('✅ Number copied! Open M-Pesa and paste it.', 'success');
+                verificationCopyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                verificationCopyBtn.classList.add('copied');
+                setTimeout(() => {
+                    verificationCopyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                    verificationCopyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(() => showToast('Could not copy. Please copy manually.', 'error'));
+        });
+
+        verificationVerifyBtn.addEventListener('click', () => {
+            if (!currentUserEmail) return;
+            const user = users[currentUserEmail];
+            if (user.activated) {
+                showToast('Account is already activated.', 'success');
+                return;
+            }
+            const msg = verificationMpesaMsg.value.trim();
+            if (!msg || msg.length < 20) {
+                verificationActStatus.className = 'activation-status error';
+                verificationActStatus.innerHTML = '<i class="fas fa-times-circle"></i> Please paste your full M-Pesa confirmation message.';
+                return;
+            }
+            const lower = msg.toLowerCase();
+            const hasNumber = lower.includes('0734872045') || lower.includes('0734 872 045') || lower.includes('0734-872-045');
+            const hasConfirmed = lower.includes('confirmed');
+            const has100 = lower.includes('ksh100') || lower.includes('ksh 100') || lower.includes('kes100') || lower.includes('kes 100') || lower.includes('100.00') || /(^|\s)100(\s|$)/.test(lower);
+            if (hasNumber && hasConfirmed && has100) {
+                user.activated = true;
+                user.mpesaMessage = msg;
+                if (!user.activationFeeRefunded) {
+                    user.wallet = (user.wallet || 0) + ACTIVATION_FEE;
+                    user.activationFeeRefunded = true;
+                }
+                user.pendingWithdrawal = { step: 'withdraw', amount: '', phone: '' };
+                saveUsers(users);
+                updateAllUI();
+                showSuccessModal('✅ Account activated!', 'Your account is now active. KES 100 has been refunded to your wallet. You can now withdraw.', ACTIVATION_FEE);
+            } else {
+                verificationActStatus.className = 'activation-status error';
+                verificationActStatus.innerHTML = '<i class="fas fa-times-circle"></i> Invalid message. Please ensure it contains the number 0734872045, the word "Confirmed", and the amount 100.';
+            }
+        });
+
+        // ==========================================
+        // HELP & SUPPORT (email only, non-clickable mailto)
+        // ==========================================
+        function openHelp() {
+            helpOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeHelp() {
+            helpOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        if (helpOpenBtn) helpOpenBtn.addEventListener('click', openHelp);
+        if (footerHelpLink) footerHelpLink.addEventListener('click', (e) => { e.preventDefault(); openHelp(); });
+        if (helpClose) helpClose.addEventListener('click', closeHelp);
+        if (helpOverlay) helpOverlay.addEventListener('click', (e) => { if (e.target === helpOverlay) closeHelp(); });
+
+        if (copySupportEmailBtn) copySupportEmailBtn.addEventListener('click', () => {
+            copyToClipboard(SUPPORT_EMAIL).then(() => {
+                showToast('✅ Support email copied!', 'success');
+                copySupportEmailBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                copySupportEmailBtn.classList.add('copied');
+                setTimeout(() => {
+                    copySupportEmailBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                    copySupportEmailBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(() => showToast('Could not copy. Please copy manually.', 'error'));
+        });
+
+        // ==========================================
+        // WITHDRAWAL CENTER (form only — all 3 requirements must be met)
+        // ==========================================
+        function openWithdrawalCenter(resume) {
+            if (!currentUserEmail) return;
+            const user = users[currentUserEmail];
+
+            if (user.withdrawalLocked) {
+                showToast('Your withdrawal is already being processed. You\'ll receive an SMS before midnight.', 'success');
+                return;
+            }
+
+            const confirmed = getConfirmedReferrals(user);
+            const fullyReferred = confirmed >= REFERRAL_TARGET;
+            const activated = !!user.activated;
+            const completedCount = (user.completedSurveys || []).length;
+            const hasCompletedSurvey = completedCount >= 1;
+            const pw = user.pendingWithdrawal;
+
+            if (!hasCompletedSurvey) {
+                showToast('Complete at least 1 survey first.', 'error');
+                return;
+            }
+            if (!fullyReferred) {
+                showToast('Refer 5 friends to unlock withdrawals.', 'error');
+                return;
+            }
+            if (!activated) {
+                showToast('Activate your account first (send KES 100 to 0734 872 045).', 'error');
+                return;
+            }
+
+            renderWithdrawalForm(pw || {});
+            withdrawalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeWithdrawalCenter() {
+            withdrawalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        withdrawalClose.addEventListener('click', closeWithdrawalCenter);
+        withdrawalOverlay.addEventListener('click', e => { if (e.target === withdrawalOverlay) closeWithdrawalCenter(); });
+
+        withdrawMainBtn.addEventListener('click', () => openWithdrawalCenter(false));
+
+        function renderWithdrawalForm(pw) {
+            const user = users[currentUserEmail];
+            const balance = user.wallet || 0;
+
+            let html = '';
+            html += '<div class="wc-header">';
+            html += '<h3><i class="fas fa-wallet" aria-hidden="true"></i> Withdraw Funds</h3>';
+            html += '<p>All requirements met! Enter your details below.</p>';
+            html += '<div class="wc-balance-label">Your balance</div>';
+            html += '<div class="wc-balance">KES ' + balance.toLocaleString() + '</div>';
+            html += '</div>';
+
+            html += '<div class="withdrawal-form">';
+            html += '<div class="input-group"><label for="wcAmount">Amount (KES)</label><input type="number" id="wcAmount" placeholder="e.g. 500" min="50" step="10" value="' + (pw.amount || '') + '" inputmode="numeric"></div>';
+            html += '<div class="input-group"><label for="wcPhone">M-Pesa phone number</label><input type="tel" id="wcPhone" placeholder="0712 345 678" value="' + escapeHTML(pw.phone || '') + '" autocomplete="tel"></div>';
+            html += '<div><div style="font-size:0.85rem;font-weight:600;color:#334155;margin-bottom:0.4rem;">Payout method</div>';
+            html += '<div class="withdrawal-methods">';
+            html += '<label class="method-option selected"><input type="radio" name="wcMethod" value="mpesa" checked><i class="fas fa-mobile-alt" style="color:#22c55e;"></i> M-Pesa</label>';
+            html += '<label class="method-option"><input type="radio" name="wcMethod" value="airtel"><i class="fas fa-sim-card" style="color:#ef4444;"></i> Airtel Money</label>';
+            html += '<label class="method-option"><input type="radio" name="wcMethod" value="tkash"><i class="fas fa-phone" style="color:#3b82f6;"></i> T-Kash</label>';
+            html += '</div></div>';
+            html += '<button class="transfer-btn" id="wcTransferBtn"><i class="fas fa-paper-plane"></i> Transfer to M-Pesa</button>';
+            html += '</div>';
+
+            withdrawalContent.innerHTML = html;
+
+            withdrawalContent.querySelectorAll('.method-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    withdrawalContent.querySelectorAll('.method-option').forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    opt.querySelector('input').checked = true;
+                });
+            });
+
+            $('wcTransferBtn').addEventListener('click', () => {
+                const amount = Number($('wcAmount').value);
+                const phone = $('wcPhone').value.trim();
+                const method = withdrawalContent.querySelector('input[name="wcMethod"]:checked').value;
+                const u = users[currentUserEmail];
+
+                if (!amount || amount < 50) { showToast('Minimum withdrawal is KES 50.', 'error'); return; }
+                if (amount > (u.wallet || 0)) { showToast('Insufficient wallet balance.', 'error'); return; }
+                if (!phone || phone.replace(/\D/g, '').length < 10) { showToast('Please enter a valid phone number.', 'error'); return; }
+
+                u.wallet = (u.wallet || 0) - amount;
+                u.pendingWithdrawal = null;
+                u.lastWithdrawal = { amount: amount, phone: phone, method: method, date: new Date().toISOString() };
+                u.withdrawalLocked = true;
+                saveUsers(users);
+                updateAllUI();
+                closeWithdrawalCenter();
+
+                successTitle.textContent = '✅ Request received!';
+                successMessage.innerHTML = 'Your withdrawal of <strong>KES ' + amount.toLocaleString() + '</strong> to <strong>' + escapeHTML(phone) + '</strong> is being processed. You will receive an M-Pesa confirmation SMS <strong>before midnight today</strong>.';
+                successAmountBox.style.display = 'none';
+                successDoneBtn.textContent = 'Done';
+                successOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        }
+
+        // ==========================================
+        // SUCCESS MODAL
+        // ==========================================
+        function showSuccessModal(title, message, amount) {
+            successTitle.textContent = title;
+            successMessage.textContent = message;
+            if (amount) {
+                successAmountBox.style.display = 'inline-block';
+                successAmount.textContent = amount.toLocaleString();
+            } else {
+                successAmountBox.style.display = 'none';
+            }
+            successDoneBtn.textContent = 'Continue';
+            successOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        successDoneBtn.addEventListener('click', () => {
+            successOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+
+        // ==========================================
+        // AUTH
+        // ==========================================
+        function showLoginTab() {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+            switchAuthText.innerHTML = 'Don\'t have an account? <a id="switchAuthLink">Register</a>';
+            $('switchAuthLink').addEventListener('click', showRegisterTab);
+        }
+        function showRegisterTab() {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+            switchAuthText.innerHTML = 'Already have an account? <a id="switchAuthLink">Login</a>';
+            $('switchAuthLink').addEventListener('click', showLoginTab);
+        }
+        loginTab.addEventListener('click', showLoginTab);
+        registerTab.addEventListener('click', showRegisterTab);
+        $('switchAuthLink').addEventListener('click', showRegisterTab);
+
+        registerForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const name = $('regName').value.trim();
+            const email = $('regEmail').value.trim().toLowerCase();
+            const password = $('regPassword').value;
+            const err = $('regError');
+            if (!name || !email || !password) { err.textContent = 'All fields are required.'; err.style.display = 'block'; return; }
+            if (password.length < 6) { err.textContent = 'Password must be at least 6 characters.'; err.style.display = 'block'; return; }
+            if (users[email]) { err.textContent = 'Email already registered. Please login.'; err.style.display = 'block'; return; }
+            err.style.display = 'none';
+            users[email] = {
+                name, email, password,
+                wallet: 0, activated: false,
+                completedSurveys: [], surveyResponses: {},
+                mpesaMessage: '', activationFeeRefunded: false,
+                referrals: [], referralCode: generateReferralCode(name, email),
+                pendingWithdrawal: null,
+                withdrawalLocked: false,
+                lastWithdrawal: null,
+                createdAt: new Date().toISOString()
+            };
+            saveUsers(users);
+            setSession(email);
+            setLoggedInUI(email);
+            showToast('✅ Account created! Welcome to SurveyKE.', 'success');
+        });
+
+        loginForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const email = $('loginEmail').value.trim().toLowerCase();
+            const password = $('loginPassword').value;
+            const err = $('loginError');
+            const user = users[email];
+            if (!user || user.password !== password) {
+                err.textContent = 'Invalid email or password.';
+                err.style.display = 'block';
+                return;
+            }
+            err.style.display = 'none';
+            setSession(email);
+            setLoggedInUI(email);
+            showToast('Welcome back, ' + user.name + '!', 'success');
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            clearSession();
+            setLoggedOutUI();
+            showToast('Logged out. You can log back in anytime.');
+        });
+
+        // ==========================================
+        // UI STATE
+        // ==========================================
+        function setLoggedInUI(email) {
+            currentUserEmail = email;
+            users = getUsers();
+            ensureUserData(email);
+            const user = users[email];
+            authScreen.classList.add('hidden');
+            dashboardScreen.classList.remove('hidden');
+            userHeader.classList.remove('hidden');
+            headerUsername.textContent = user.name || 'User';
+            userNameDisplay.textContent = user.name || 'User';
+            updateAllUI();
+        }
+
+        function setLoggedOutUI() {
+            currentUserEmail = null;
+            authScreen.classList.remove('hidden');
+            dashboardScreen.classList.add('hidden');
+            userHeader.classList.add('hidden');
+            loginForm.reset();
+            registerForm.reset();
+            $('loginError').style.display = 'none';
+            $('regError').style.display = 'none';
+        }
+
+        // ==========================================
+        // INIT
+        // ==========================================
+        (function init() {
+            try {
+                const session = getSession();
+                if (session && session.email) {
+                    users = getUsers();
+                    const user = users[session.email];
+                    if (user && user.password) {
+                        setLoggedInUI(session.email);
+                    } else {
+                        clearSession();
+                        setLoggedOutUI();
+                    }
+                } else {
+                    setLoggedOutUI();
+                }
+                const params = new URLSearchParams(window.location.search);
+                const refCode = params.get('ref');
+                if (refCode) {
+                    showToast('👋 You were referred! Sign up to get started.', 'success');
+                }
+            } catch (e) {
+                console.error('Init error:', e);
+                clearSession();
+                setLoggedOutUI();
+            }
+            document.body.classList.remove('loading');
+        })();
+    </script>
+</body>
+</html>
